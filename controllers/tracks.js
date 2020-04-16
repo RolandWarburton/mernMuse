@@ -102,7 +102,7 @@ getTracks = async (req, res) => {
 					.status(404)
 					.json({ success: false, error: "Tracks not found" })
 			}
-			return res.status(200).json({ success: true, data: tracks })
+			return res.status(200).json(tracks)
 		})
 		.catch(err => console.log(err))
 }

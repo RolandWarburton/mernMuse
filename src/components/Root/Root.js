@@ -5,11 +5,13 @@ import Meta from '../Meta';
 import Home from '../Home';
 import Track from '../Track';
 import NotFound from '../NotFound';
+import Manage from '../Manage';
 
 const Root = () => {
 	return (
 		<Switch>
 			<Route exact path="/" component={Home} />
+			<Route exact path="/manage" component={Manage} />
 			<Route exact path="/track/:name" component={Track} />
 			<Route exact path="*" component={NotFound} />
 		</Switch>
