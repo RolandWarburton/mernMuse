@@ -14,19 +14,9 @@ require('dotenv').config();
 createTrack = (req, res) => {
 	console.log("parsing")
 
-	// const form = formidable(
-	// 	{
-	// 		multiples: false,
-	// 		uploadDir: process.env.ROOT + "/uploads",
-	// 		keepExtensions: true
-	// 	}
-	// );
-
-	// const form = new formidable.IncomingForm();
-
-	// create a new Track object from the mongoose schema
-
-
+	// Heres some other things you can add to formidable:...
+	// uploadDir: process.env.ROOT + "/uploads",
+	// keepExtensions: true
 	const form = new Formidable({ multiples: true });
 	let fields = {};
 	let img = {};
@@ -39,8 +29,6 @@ createTrack = (req, res) => {
 			res.end(`error:\n\n${util.inspect(err)}`);
 		})
 		.on('field', (fieldName, fieldValue) => {
-			// console.log('fieldName:', fieldName);
-
 			fields = {
 				...fields,
 				[fieldName]: fieldValue
@@ -137,20 +125,19 @@ getTrackInfoById = async (req, res) => {
 }
 
 getTrackImgById = async (req, res) => {
-	await Track
-		.findOne({ title: req.params.id }, 'img', (err, track) => {
-			if (err) {
-				return res.status(400).json({ success: false, error: err })
-			}
-
-			if (!track) {
-				return res
-					.status(404)
-					.json({ success: false, error: "Track not found" })
-			}
-			res.status(200).send(new Buffer.from(track.img.data, "binary"))
+	res.setHeader('content-type', 'image/png');
+	res.setHeader('accept-ranges', 'bytes');
+	Track
+		.find({ title: req.params.id }, "img")
+		.cursor()
+		.on('error', (err) => {
+			console.log(err);
+			res.status(400).json({ success: false, err: err })
 		})
-		.catch((err) => console.log(err))
+		.on('data', (doc) => {
+			res.status(200).send(new Buffer.from(doc.img.data, "binary"))
+		})
+		.on('end', () => { });
 }
 
 getTrackMp3ById = async (req, res) => {
@@ -158,37 +145,20 @@ getTrackMp3ById = async (req, res) => {
 	res.setHeader('accept-ranges', 'bytes');
 
 	Track
-	.find({ title: req.params.id }, "mp3")
-	.cursor()
-	.on('data', (doc) => { 
-		// res.setHeader('Content-type', 'audio/mp3');
-		res.status(200).send(new Buffer.from(doc.mp3.data, "binary"))
-	})
-	.on('end', () => { console.log("send some data!"); });
-	
+		.find({ title: req.params.id }, "mp3")
+		.cursor()
+		.on('error', (err) => {
+			console.log(err);
+			res.status(400).json({ success: false, err: err })
+		})
+		.on('data', (doc) => {
+			res.status(200).send(new Buffer.from(doc.mp3.data, "binary"))
+		})
+		.on('end', () => { });
+
 	// Refer to the docs for how cursors work
 	// here https://mongoosejs.com/docs/api.html#query_Query-cursor
 	// and here https://thecodebarbarian.com/cursors-in-mongoose-45
-}
-
-getTrackMedia = async (req, res) => {
-	await Track
-		.findOne({ title: req.params.id }, (err, track) => {
-			if (err) {
-				return res.status(400).json({ success: false, error: err })
-			}
-
-			if (!track) {
-				return res
-					.status(404)
-					.json({ success: false, error: "Track not found" })
-			}
-
-			console.log(track)
-			return res.status(200).sendFile(path.resolve(process.env.ROOT, "uploads", track.imgName))
-			// return res.status(200).json({ success: true, data: track })
-		})
-		.catch((err) => console.log(err))
 }
 
 module.exports = {
@@ -199,3 +169,19 @@ module.exports = {
 	getTrackMp3ById,
 	getTrackInfoById
 }
+
+// Heres the other way of doing binary transfers
+// await Track
+// 	.findOne({ title: req.params.id }, 'img', (err, track) => {
+// 		if (err) {
+// 			return res.status(400).json({ success: false, error: err })
+// 		}
+
+// 		if (!track) {
+// 			return res
+// 				.status(404)
+// 				.json({ success: false, error: "Track not found" })
+// 		}
+// 		res.status(200).send(new Buffer.from(track.img.data, "binary"))
+// 	})
+// 	.catch((err) => console.log(err))
