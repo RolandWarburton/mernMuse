@@ -6,7 +6,7 @@
   "main": "src/index.js",
   "scripts": {
     "build": "webpack --config webpack.config.js -w",
-    "server": "node server.js",
+    "server": "nodemon server.js",
     "monitor": "concurrently \"npm run server\" \"npm run build\"",
     "test": "jest"
   },
