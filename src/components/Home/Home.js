@@ -139,8 +139,19 @@ const Home = () => {
 				accessor: 'imgName',
 				// row and original are callbacks (i didn't define them)
 				Cell: ({row, original}) => {
-					console.log(original)
-					return <div><img height={100} src={"/api/track/" + row.values.title} /></div>
+					return <div><img height={100} src={"/api/track/image/" + row.values.title} /></div>
+					// return <div>test</div>
+				},
+				filterable: false
+			}
+			,
+			{
+				Header: 'Mp3',
+				accessor: 'mp3',
+				// row and original are callbacks (i didn't define them)
+				Cell: ({row, original}) => {
+					return <div><audio controls type="audio/mpeg" height={100} src={"/api/track/sound/" + row.values.title} /></div>
+					// return <div>test</div>
 				},
 				filterable: false
 			}

@@ -216,7 +216,7 @@ deleteTrack = async (req, res) => {
 			if (!track) {
 				return res
 					.status(404)
-					.json({ success: false, error: `track not found` })
+					.json({ success: false, error: "track not found" })
 			}
 			return res.status(200).json({ success: true, data: track })
 		})
@@ -224,22 +224,26 @@ deleteTrack = async (req, res) => {
 }
 
 getTracks = async (req, res) => {
+	// const query =  await Track.find({}, 'title')
+	// query.exec((err, tracks) => {
+	// 	return res.status(200).json({ success: true, data: tracks })
+	// })
 	await Track
-		.find({}, (err, tracks) => {
+		.find({}, 'title desc', (err, tracks) => {
 			if (err) {
 				return res.status(400).json({ success: false, error: err })
 			}
 			if (!tracks.length) {
 				return res
 					.status(404)
-					.json({ success: false, error: `Tracks not found` })
+					.json({ success: false, error: "Tracks not found" })
 			}
 			return res.status(200).json({ success: true, data: tracks })
 		})
 		.catch(err => console.log(err))
 }
 
-getTrackImgById = async (req, res) => {
+getTrackInfoById = async (req, res) => {
 	await Track
 		.findOne({ title: req.params.id }, (err, track) => {
 			if (err) {
@@ -251,26 +255,44 @@ getTrackImgById = async (req, res) => {
 					.status(404)
 					.json({ success: false, error: `Track not found` })
 			}
-			res.status(200).send(new Buffer.from(track.img.data, 'binary'))
+			res.status(200).json({ success: true, data: { title: track.title, desc: track.desc } })
+		})
+		.catch((err) => console.log(err))
+}
+
+getTrackImgById = async (req, res) => {
+	await Track
+		.findOne({ title: req.params.id }, 'img', (err, track) => {
+			if (err) {
+				return res.status(400).json({ success: false, error: err })
+			}
+
+			if (!track) {
+				return res
+					.status(404)
+					.json({ success: false, error: "Track not found" })
+			}
+			res.status(200).send(new Buffer.from(track.img.data, "binary"))
 		})
 		.catch((err) => console.log(err))
 }
 
 getTrackMp3ById = async (req, res) => {
-	await Track
-		.findOne({ title: req.params.id }, (err, track) => {
-			if (err) {
-				return res.status(400).json({ success: false, error: err })
-			}
+	res.setHeader('content-type', 'audio/mp3');
+	res.setHeader('accept-ranges', 'bytes');
 
-			if (!track) {
-				return res
-					.status(404)
-					.json({ success: false, error: `Track not found` })
-			}
-			res.status(200).send(new Buffer.from(track.mp3.data, 'binary'))
-		})
-		.catch((err) => console.log(err))
+	Track
+	.find({ title: req.params.id }, "mp3")
+	.cursor()
+	.on('data', (doc) => { 
+		// res.setHeader('Content-type', 'audio/mp3');
+		res.status(200).send(new Buffer.from(doc.mp3.data, "binary"))
+	})
+	.on('end', () => { console.log("send some data!"); });
+	
+	// Refer to the docs for how cursors work
+	// here https://mongoosejs.com/docs/api.html#query_Query-cursor
+	// and here https://thecodebarbarian.com/cursors-in-mongoose-45
 }
 
 getTrackMedia = async (req, res) => {
@@ -283,7 +305,7 @@ getTrackMedia = async (req, res) => {
 			if (!track) {
 				return res
 					.status(404)
-					.json({ success: false, error: `Track not found` })
+					.json({ success: false, error: "Track not found" })
 			}
 
 			console.log(track)
@@ -298,5 +320,6 @@ module.exports = {
 	deleteTrack,
 	getTracks,
 	getTrackImgById,
-	getTrackMp3ById
+	getTrackMp3ById,
+	getTrackInfoById
 }

@@ -15,11 +15,13 @@ const Track = mongoose.Schema({
 	},
 	img: {
 		data: Buffer,
-		contentType: String
+		contentType: String,
+		select: false
 	},
 	mp3: {
 		data: Buffer,
-		contentType: String
+		contentType: String,
+		select: false
 	}
 
 }, { collection: 'testCollection' })

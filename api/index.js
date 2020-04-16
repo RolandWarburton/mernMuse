@@ -9,8 +9,9 @@ const api = axios.create({
 export const createTrack = (payload) => api.post(`/track`, payload)
 export const getTracks = () => api.get(`/tracks`)
 export const deleteTrack = id => api.delete(`/track/${id}`)
-export const getTrackImgById = id => api.get(`/track/${id}`)
-export const getTrackMp3ById = id => api.get(`/sound/${id}`)
+export const getTrackDataById = id => api.get(`/track/info/${id}`)
+export const getTrackImgById = id => api.get(`/image/image/${id}`)
+export const getTrackMp3ById = id => api.get(`/sound/sound/${id}`)
 	
 
 const apis = {

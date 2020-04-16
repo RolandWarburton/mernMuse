@@ -31,10 +31,13 @@ const fs = require('fs')
 router.get('/tracks', TrackController.getTracks)
 
 // return a track by its ID
-router.get('/track/:id', TrackController.getTrackImgById)
+router.get('/track/info/:id', TrackController.getTrackInfoById)
 
 // return a track by its ID
-router.get('/sound/:id', TrackController.getTrackMp3ById)
+router.get('/track/sound/:id', TrackController.getTrackMp3ById)
+
+// return a track by its ID
+router.get('/track/image/:id', TrackController.getTrackImgById)
 
 // post a track
 router.post('/track', TrackController.createTrack)

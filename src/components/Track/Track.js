@@ -10,7 +10,7 @@ const Track = ({ match }) => {
 			<h1>Track</h1>
 			<div>
 				<p>{params.name}</p>
-				<img src="/api/track/b"></img>
+				<img src={"/api/track/" + params.name}></img>
 			</div>
 		</Fragment>
 	);
