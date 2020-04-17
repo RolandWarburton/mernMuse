@@ -1,13 +1,13 @@
 body {
 	background: $background;
-	// color: $text;
+	color: $text;
 }
 
 #app {
 	// background-color: lighten($background, 10%);
 	margin: 0 auto;
 	margin: 0 5vw;
-	
+
 	@include tablet {
 		margin: 0 8vw;
 	}
@@ -17,10 +17,55 @@ body {
 	}
 }
 
-// span {
-//     white-space: nowrap;
-//     text-overflow: ellipsis;
-//     width: 280px;
-//     display: block;
-//     overflow: hidden
-// }
+table {
+	background-color: lighten($background, 10%);
+	border-radius: 5px;
+	// margin: 5rem;
+	// padding: 5rem;
+	margin: auto;
+	width: 80vw;
+	td {
+		min-width: 30vw;
+	}
+	tr {
+		height: 110px;
+	}
+	th {
+		text-align: left;
+	}
+	h3 {
+		text-decoration: underline;
+	}
+}
+
+.formWrapper {
+	width: 80vw;
+}
+
+form {
+	background-color: lighten($background, 10%);
+	border-radius: 5px;
+	margin: 2.5rem;
+	padding: 2ch;
+	// width: 80vw;
+	margin: 5rem auto;
+	input {
+		margin: 1ch 0;
+	}
+	legend {
+		text-decoration: underline;
+	}
+	fieldset {
+		border: none;
+		margin: 2ch;
+		padding: 2ch;
+	}
+}
+
+nav {
+	display: flex;
+	flex-direction: row;
+	// flex: 1 1 1 auto;
+	justify-content: space-evenly;
+	margin: 1rem 2.5rem;
+}
