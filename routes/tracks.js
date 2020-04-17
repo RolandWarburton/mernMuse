@@ -31,7 +31,7 @@ const fs = require('fs')
 router.get('/tracks', TrackController.getTracks)
 
 // return a track by its ID
-router.get('/track/info/:id', TrackController.getTrackInfoById)
+router.get('/track/info/:id', TrackController.getTrackById)
 
 // return a track by its ID
 router.get('/track/sound/:id', TrackController.getTrackMp3ById)

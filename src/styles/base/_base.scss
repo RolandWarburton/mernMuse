@@ -1,20 +1,26 @@
 body {
 	background: $background;
-	color: $text;
+	// color: $text;
 }
 
 #app {
-	background-color: lighten($background, 10%);
+	// background-color: lighten($background, 10%);
 	margin: 0 auto;
 	margin: 0 5vw;
 	
 	@include tablet {
-		background-color: green;
 		margin: 0 8vw;
 	}
 
 	@include desktop {
 		margin: 0 15vw;
-		background-color: red;
 	}
 }
+
+// span {
+//     white-space: nowrap;
+//     text-overflow: ellipsis;
+//     width: 280px;
+//     display: block;
+//     overflow: hidden
+// }

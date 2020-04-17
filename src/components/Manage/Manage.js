@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from "react"
+import React, { Fragment, useState, useEffect, Suspense } from "react"
 import Navigation from '../Navigation'
 import api from '../../../api'
 import { v5 as uuidv5 } from 'uuid';
@@ -22,68 +22,56 @@ export const useInput = initialValue => {
 	};
 };
 
-export const useDataInput = initialValue => {
-	const [value, setValue] = useState(initialValue);
-
-	return {
-		value,
-		setValue,
-		reset: () => setValue(""),
-		bind: {
-			value,
-			onChange: (event) => {
-				setValue(event.target.value);
-				console.log(event.target.value);
-			}
-		}
-	};
-};
-
 function Table({ columns, data }) {
-	// Use the state and functions returned from useTable to build your UI
-	const {
-		getTableProps,
-		getTableBodyProps,
-		headerGroups,
-		rows,
-		prepareRow,
-	} = useTable({
-		columns,
-		data,
-	})
+	if (data) {
+		// Use the state and functions returned from useTable to build your UI
+		const {
+			getTableProps,
+			getTableBodyProps,
+			headerGroups,
+			rows,
+			prepareRow,
+		} = useTable({
+			columns,
+			data,
+		})
 
-	// Render the UI for your table
-	return (
-		<table {...getTableProps()}>
-			<thead>
-				{headerGroups.map(headerGroup => (
-					<tr {...headerGroup.getHeaderGroupProps()}>
-						{headerGroup.headers.map(column => (
-							<th {...column.getHeaderProps()}>{column.render('Header')}</th>
-						))}
-					</tr>
-				))}
-			</thead>
-			<tbody {...getTableBodyProps()}>
-				{rows.map((row, i) => {
-					prepareRow(row)
-					return (
-						<tr {...row.getRowProps()}>
-							{row.cells.map(cell => {
-								return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-							})}
+		// Render the UI for your table
+		return (
+			<table {...getTableProps()}>
+				<thead>
+					{headerGroups.map(headerGroup => (
+						<tr {...headerGroup.getHeaderGroupProps()}>
+							{headerGroup.headers.map(column => (
+								<th {...column.getHeaderProps()}>{column.render('Header')}</th>
+							))}
 						</tr>
-					)
-				})}
-			</tbody>
-		</table>
-	)
+					))}
+				</thead>
+				<tbody {...getTableBodyProps()}>
+					{rows.map((row, i) => {
+						prepareRow(row)
+						return (
+							<tr {...row.getRowProps()}>
+								{row.cells.map(cell => {
+									return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+								})}
+							</tr>
+						)
+					})}
+				</tbody>
+			</table>
+		)
+	} else {
+		return <div>loading</div>
+	}
+
 }
 
 
 const Manage = () => {
 	// State for track data thats being fetched from the api
-	const [tracks, setTracks] = useState({ data: [] });
+	const [tracks, setTracks] = useState();
 
 	// Get form hooks for each field in the form
 	const { value: valueTitle, bind: bindTitle, reset: resetTitle } = useInput('');
@@ -101,16 +89,16 @@ const Manage = () => {
 		// input.setValue("name", "t")
 		// input.name = "aaa"
 		// console.log(input.name)
-		form.append("image", new Blob([img], {type: "image/png"}))
-		form.append("mp3", new Blob([mp3], {type: "audio/mp3"}))
+		form.append("img", new Blob([img], { type: "image/png" }))
+		form.append("mp3", new Blob([mp3], { type: "audio/mp3" }))
 		form.append("title", valueTitle)
 		form.append("desc", valueDesc)
 		api.createTrack(form);
 		alert(`Submitting Name ${valueTitle}, ${valueDesc}`)
 		// resetTitle()
 		// resetDesc()
-		resetImg()
-		resetMp3()
+		// resetImg()
+		// resetMp3()
 	}
 
 	// On component mount fetch all tracks from the api
@@ -118,9 +106,11 @@ const Manage = () => {
 		const fetchData = async () => {
 			const result = await api.getTracks()
 			setTracks(result.data);
+			// console.log(tracks)
 		}
 		fetchData()
 	}, []);
+	console.log(tracks)
 
 	const columns = React.useMemo(
 		() => [
@@ -179,7 +169,7 @@ const Manage = () => {
 				<input type="submit" value="Submit" />
 			</form>
 
-			<Table columns={columns} data={tracks.data} />
+			<Table columns={columns} data={tracks} />
 		</Fragment>
 	);
 }

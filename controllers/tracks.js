@@ -5,8 +5,9 @@ const util = require('util');
 const path = require('path');
 const { v5: uuidv5 } = require('uuid');
 const FormData = require('form-data');
-var Binary = require('mongodb').Binary;
-var multer = require('multer');
+const Binary = require('mongodb').Binary;
+const ffmpeg = require('fluent-ffmpeg');
+const mime = require('mime-types')
 require('dotenv').config();
 
 // check this one for a progress bar! WOULD BE COOL THO
@@ -17,10 +18,9 @@ createTrack = (req, res) => {
 	// Heres some other things you can add to formidable:...
 	// uploadDir: process.env.ROOT + "/uploads",
 	// keepExtensions: true
-	const form = new Formidable({ multiples: true });
+	const form = new Formidable({ multiples: true, uploadDir: './uploads', keepExtensions: true });
 	let fields = {};
-	let img = {};
-	let mp3 = {};
+	let files = {}
 
 	form
 		.on('error', (err) => {
@@ -34,30 +34,20 @@ createTrack = (req, res) => {
 				[fieldName]: fieldValue
 			}
 		})
+		.on('fileBegin', function (name, file) {
+			//rename the incoming file to the file's name
+			file.path = form.uploadDir + "/" + uuidv5(file.path, uuidv5.URL) + "." + mime.extension(file.type);
+		})
 		.on('file', (filename, file) => {
-			console.log('filename:', filename);
-
-			// save the image to a file stream buffer which mongodb can accept
-			if (filename == "image") {
-				img = {
-					data: fs.readFileSync(file.path),
-					contentType: "Buffer"
-				}
-			} else {
-				mp3 = {
-					data: fs.readFileSync(file.path),
-					contentType: "Buffer"
-				}
+			files = {
+				...files,
+				[filename]: file.path
 			}
 		})
 		.on('end', () => {
 			// create a new track based on the schema
-			const track = new Track({ ...fields, mp3, img })
+			const track = new Track({ ...fields, ...files })
 			track.save()
-			console.log(track)
-			// console.log({...img.mp3})
-
-			console.log('-> post done from "end" event');
 
 			// return 200 and the fields we got
 			res.writeHead(200, { 'content-type': 'text/plain' });
@@ -107,7 +97,7 @@ getTracks = async (req, res) => {
 		.catch(err => console.log(err))
 }
 
-getTrackInfoById = async (req, res) => {
+getTrackById = async (req, res) => {
 	await Track
 		.findOne({ title: req.params.id }, (err, track) => {
 			if (err) {
@@ -134,11 +124,27 @@ getTrackImgById = async (req, res) => {
 			console.log(err);
 			res.status(400).json({ success: false, err: err })
 		})
-		.on('data', (doc) => {
-			res.status(200).send(new Buffer.from(doc.img.data, "binary"))
+		.on('data', (track) => {
+			res.status(400).send(fs.readFileSync(track.img))
 		})
 		.on('end', () => { });
 }
+
+// getTrackWaveById = async (req, res) => {
+// 	res.setHeader('content-type', 'image/png');
+// 	res.setHeader('accept-ranges', 'bytes');
+// 	Track
+// 		.find({ title: req.params.id }, "mp3")
+// 		.cursor()
+// 		.on('error', (err) => {
+// 			console.log(err);
+// 			res.status(400).json({ success: false, err: err })
+// 		})
+// 		.on('data', (doc) => {
+// 			// res.status(200).send(new Buffer.from(doc.img.data, "binary"))
+// 		})
+// 		.on('end', () => { });
+// }
 
 getTrackMp3ById = async (req, res) => {
 	res.setHeader('content-type', 'audio/mp3');
@@ -151,8 +157,30 @@ getTrackMp3ById = async (req, res) => {
 			console.log(err);
 			res.status(400).json({ success: false, err: err })
 		})
-		.on('data', (doc) => {
-			res.status(200).send(new Buffer.from(doc.mp3.data, "binary"))
+		.on('data', (track) => {
+			const filePath = track.mp3;
+			const stat = fs.statSync(filePath);
+			const total = stat.size;
+			if (req.headers.range) {
+				const range = req.headers.range;
+				const parts = range.replace(/bytes=/, "").split("-");
+				const partialstart = parts[0];
+				const partialend = parts[1];
+
+				const start = parseInt(partialstart, 10);
+				const end = partialend ? parseInt(partialend, 10) : total - 1;
+				const chunksize = (end - start) + 1;
+				const readStream = fs.createReadStream(filePath, { start: start, end: end });
+				res.writeHead(206, {
+					'Content-Range': 'bytes ' + start + '-' + end + '/' + total,
+					'Accept-Ranges': 'bytes', 'Content-Length': chunksize,
+					'Content-Type': 'video/mp3'
+				});
+				readStream.pipe(res);
+			} else {
+				res.writeHead(200, { 'Content-Length': total, 'Content-Type': 'audio/mp3' });
+				fs.createReadStream(filePath).pipe(res);
+			}
 		})
 		.on('end', () => { });
 
@@ -167,7 +195,7 @@ module.exports = {
 	getTracks,
 	getTrackImgById,
 	getTrackMp3ById,
-	getTrackInfoById
+	getTrackById
 }
 
 // Heres the other way of doing binary transfers
@@ -185,3 +213,59 @@ module.exports = {
 // 		res.status(200).send(new Buffer.from(track.img.data, "binary"))
 // 	})
 // 	.catch((err) => console.log(err))
+
+
+// fluent ffmpeg options
+// 
+// .on('start', () => {
+// 	console.log('FFMPEG started');
+// })
+// .on('progress', (progress) => {
+// 	console.log('progress:', progress);
+// })
+// .on('error', error => {
+// 	console.log('FFMPEG error:', error);
+// 	reject(error.message);
+// })
+// .on('end', () => {
+// 	console.log('FFMPEG is done!');
+// })
+
+// if (filename == "image") {
+			// 	img = {
+			// 		data: fs.readFileSync(file.path),
+			// 		contentType: "Buffer"
+			// 	}
+			// } else {
+
+
+
+			// 	ffmpeg()
+			// 		.input(file.path)
+			// 		.complexFilter(
+			// 			[
+			// 				`[0:a]aformat=channel_layouts=mono,compand=gain=+2,showwavespic=s=640x120:colors=#A9A9A9[waveform]`
+			// 			],
+			// 			['waveform']
+			// 		)
+			// 		.outputOption('-vframes 1')
+			// 		.saveToFile(file.path + "_waveformTemp.png")
+			// 		.on('end', () => {
+			// 			ffmpeg()
+			// 				.input(file.path + "_waveformTemp.png")
+			// 				.outputOption('-filter:v:0 crop=in_w:in_h/2:0:0')
+			// 				.saveToFile(file.path + "_waveform.png")
+			// 				.on('end', () => {
+			// 					console.log("saving mp3")
+			// 					// delete the temp file
+			// 					fs.unlink(file.path + "_waveformTemp.png", () => { })
+
+			// 					// read in the stuff
+			// 					mp3.spectrum = fs.readFileSync(file.path + "_waveform.png")
+			// 				})
+			// 		})
+
+			// 	mp3 = {
+			// 		location: file.path
+			// 	}
+			// }

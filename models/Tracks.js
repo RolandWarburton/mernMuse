@@ -14,14 +14,12 @@ const Track = mongoose.Schema({
 		require: true
 	},
 	img: {
-		data: Buffer,
-		contentType: String,
-		select: false
+		type: String,
+		require: true
 	},
 	mp3: {
-		data: Buffer,
-		contentType: String,
-		select: false
+		type: String,
+		require: true
 	}
 
 }, { collection: 'testCollection' })
