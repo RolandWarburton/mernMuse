@@ -1,57 +1,52 @@
-import React, { Fragment, useState, useEffect, Suspense } from "react"
+import React, { Fragment, useState, useEffect, Suspense, useRef } from "react"
 import Navigation from '../Navigation'
+import { Link } from "react-router-dom"
 import api from '../../../api'
 import { v5 as uuidv5 } from 'uuid';
 import Track from "../Track";
 import { jsx, css } from '@emotion/core'
 import styled from '@emotion/styled'
 
-const TrackWrapper = styled.div`
-	display: grid;
-	grid-template-columns: auto auto auto;
-	grid-template-rows: auto;
-	justify-content: space-around;
-	box-sizing: border-box;
-	&:hover: {
-		background: 'lightgreen'
-	}
-	//   background-color: red;
-`
-
-const TrackContent = styled.div`
-	// background-color: rgba(0,0,0,0.9);
-	background: linear-gradient(to bottom, black, rgba(0,0,0,0.9) 90%, transparent);
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	overflow: hidden;
-	height: 60px;
-	padding: 10px;
-	width: 300px;
+const TrackArt = styled.div`	
+	background: url(/api/track/image/${props => props.background});
+	background-position: center center;
+	background-size: cover;
+	height: 200px;
+	width: 200px;
+	border-radius: 200px 200px 0 200px;
 	transition: height 0.2s ease-out;
 	color: white;
 `
 
 const TrackBox = styled.div`
-	background: url(/api/track/image/${props => props.background});
-	margin: 20px;
-	border-radius: 0 0 5px 5px;
-	background-position: center center;
-	background-size: cover;
-	height: 300px;
-	&:hover ${TrackContent} {
-		height: 80px;
-	}
-	&hover {
-		background-size(200%);
+	display: grid;
+	border-radius: 200px 0 0 200px;
+	grid-template-columns: auto 1fr;
+	grid-template-rows: 1;
+	justify-content: flex-start;
+	margin: 0.5rem 0;
+	background-color: #1f1f1f;
+	transition: background-color 0.1s ease-out;
+	&:hover {
+		background-color: #2b2b2b;
 	}
 `
 
-const DescriptionBox = styled.span`
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	width: 200px;
-	display: block;
-	overflow: hidden
+const TrackContent = styled.div`
+	display: grid;
+	padding: 1rem 1rem 0 1rem;
+	grid-template-rows: 1fr 1fr;
+`
+
+const TrackSpectrum = styled.div`
+	background: url(https://i.imgur.com/ZoTI40Z.png);
+	// background-position: center center;
+	// background-size: cover;
+	// justify-content: flex-end;
+	position: relative;
+	bottom: 0px;
+	width: 100%;
+	height: 50px;
 `
 
 
@@ -59,20 +54,17 @@ const Tracks = ({ tracks }) => {
 	if (tracks != undefined) {
 		const themes = []
 		tracks.map(t => themes.push(encodeURIComponent(t.title)))
-		console.log(themes)
-
 		return (
 			tracks.map((track, i) => {
-				// return <li key={i}>{item.title}</li>
-				const url = encodeURIComponent(track.title)
 				return (
-					<TrackBox background={themes[i]} key={i}>
+					<TrackBox key={i}>
+						<TrackArt background={themes[i]} />
 						<TrackContent>
-							<h2>{track.title}</h2>
-							<DescriptionBox>
-								{track.desc}
-							</DescriptionBox>
-
+							<h1>{track.title}</h1>
+							{track.desc}
+							{/* the actual audio player */}
+							{/* <audio controls="controls" src={"/api/track/sound/" + track.title}/> */}
+							<TrackSpectrum />
 						</TrackContent>
 					</TrackBox >
 				)
@@ -82,7 +74,6 @@ const Tracks = ({ tracks }) => {
 		return (<div></div>)
 	}
 }
-
 
 const Home = () => {
 	// State for track data thats being fetched from the api
@@ -102,9 +93,7 @@ const Home = () => {
 	return (
 		<Fragment>
 			<Navigation />
-			<TrackWrapper>
-				<Suspense fallback="loading..."><Tracks tracks={tracks} /></Suspense>
-			</TrackWrapper>
+			<Suspense fallback="loading..."><Tracks tracks={tracks} /></Suspense>
 		</Fragment>
 	);
 }

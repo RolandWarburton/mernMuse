@@ -43,7 +43,7 @@ function Table({ columns, data }) {
 					{headerGroups.map(headerGroup => (
 						<tr {...headerGroup.getHeaderGroupProps()}>
 							{headerGroup.headers.map(column => (
-								<th {...column.getHeaderProps()}>{column.render('Header')}</th>
+								<th {...column.getHeaderProps()}><h3>{column.render('Header')}</h3></th>
 							))}
 						</tr>
 					))}
@@ -115,11 +115,6 @@ const Manage = () => {
 	const columns = React.useMemo(
 		() => [
 			{
-				Header: 'ID',
-				accessor: '_id',
-				filterable: true
-			},
-			{
 				Header: 'Title',
 				accessor: 'title',
 				filterable: true
@@ -128,19 +123,8 @@ const Manage = () => {
 				Header: 'ImgName',
 				accessor: 'imgName',
 				// row and original are callbacks (i didn't define them)
-				Cell: ({row, original}) => {
+				Cell: ({ row, original }) => {
 					return <div><img height={100} src={"/api/track/image/" + row.values.title} /></div>
-					// return <div>test</div>
-				},
-				filterable: false
-			}
-			,
-			{
-				Header: 'Mp3',
-				accessor: 'mp3',
-				// row and original are callbacks (i didn't define them)
-				Cell: ({row, original}) => {
-					return <div><audio controls type="audio/mpeg" height={100} src={"/api/track/sound/" + row.values.title} /></div>
 					// return <div>test</div>
 				},
 				filterable: false
@@ -150,24 +134,39 @@ const Manage = () => {
 	return (
 		<Fragment>
 			<Navigation />
-			<h1>Root</h1>
-			<form onSubmit={handleSubmit} encType="multipart/form-data" method="POST">
-				<fieldset>
-					<legend>Track information:</legend>
-					<label>
-						Name: <input type="text" name="name" {...bindTitle} />
-					</label>
-					<br />
-					<label>
-						Description: <input type="text" name="desc" {...bindDesc} />
-					</label>
-				</fieldset>
-				<input type="file" name="img" accept="image/*" {...bindImg} />
-				<br />
-				<input type="file" name="mp3"  {...bindMp3} />
-				<br />
-				<input type="submit" value="Submit" />
-			</form>
+			<div className="formWrapper">
+				<form onSubmit={handleSubmit} encType="multipart/form-data" method="POST">
+					<fieldset>
+						<legend><h3>Enter track information:</h3></legend>
+						<label>
+							<input type="text" name="name" placeholder="Track name" {...bindTitle} />
+						</label>
+						<br />
+						<label>
+							<input type="text" name="desc" placeholder="Description" {...bindDesc} />
+						</label>
+					</fieldset>
+
+					<fieldset>
+					<legend><h3>Submit track data:</h3></legend>
+						<label>
+							PNG<br />
+							<input type="file" name="img" accept="image/*" {...bindImg} />
+						</label>
+						<br />
+						<label>
+							MP3:<br />
+							<input type="file" name="mp3"  {...bindMp3} />
+						</label>
+						<br />
+					</fieldset>
+
+					<fieldset>
+						<input type="submit" value="Submit" />
+					</fieldset>
+
+				</form>
+			</div>
 
 			<Table columns={columns} data={tracks} />
 		</Fragment>

@@ -125,7 +125,7 @@ getTrackImgById = async (req, res) => {
 			res.status(400).json({ success: false, err: err })
 		})
 		.on('data', (track) => {
-			res.status(400).send(fs.readFileSync(track.img))
+			res.status(200).send(fs.readFileSync(track.img))
 		})
 		.on('end', () => { });
 }
