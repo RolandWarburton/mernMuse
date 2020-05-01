@@ -6,6 +6,7 @@ import { v5 as uuidv5 } from 'uuid';
 import Track from "../Track";
 import { jsx, css } from '@emotion/core'
 import styled from '@emotion/styled'
+import TrackCanvas from '../Track/trackCanvas'
 
 const TrackArt = styled.div`	
 	background: url(/api/track/image/${props => props.background});
@@ -28,7 +29,7 @@ const TrackBox = styled.div`
 	background-color: #1f1f1f;
 	transition: background-color 0.1s ease-out;
 	&:hover {
-		background-color: #2b2b2b;
+		// background-color: #2b2b2b;
 	}
 `
 
@@ -62,9 +63,7 @@ const Tracks = ({ tracks }) => {
 						<TrackContent>
 							<h1>{track.title}</h1>
 							{track.desc}
-							{/* the actual audio player */}
-							{/* <audio controls="controls" src={"/api/track/sound/" + track.title}/> */}
-							<TrackSpectrum />
+							<TrackCanvas id={track.title}/>
 						</TrackContent>
 					</TrackBox >
 				)
