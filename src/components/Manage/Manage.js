@@ -2,10 +2,9 @@ import React, { Fragment, useState, useEffect, Suspense } from "react"
 import Navigation from '../Navigation'
 import api from '../../../api'
 import { v5 as uuidv5 } from 'uuid';
+import Table from './Table'
 
-import { useTable, usePagination } from 'react-table'
-
-
+// bindings for each field
 export const useInput = initialValue => {
 	const [value, setValue] = useState(initialValue);
 
@@ -21,53 +20,6 @@ export const useInput = initialValue => {
 		}
 	};
 };
-
-function Table({ columns, data }) {
-	if (data) {
-		// Use the state and functions returned from useTable to build your UI
-		const {
-			getTableProps,
-			getTableBodyProps,
-			headerGroups,
-			rows,
-			prepareRow,
-		} = useTable({
-			columns,
-			data,
-		})
-
-		// Render the UI for your table
-		return (
-			<table {...getTableProps()}>
-				<thead>
-					{headerGroups.map(headerGroup => (
-						<tr {...headerGroup.getHeaderGroupProps()}>
-							{headerGroup.headers.map(column => (
-								<th {...column.getHeaderProps()}><h3>{column.render('Header')}</h3></th>
-							))}
-						</tr>
-					))}
-				</thead>
-				<tbody {...getTableBodyProps()}>
-					{rows.map((row, i) => {
-						prepareRow(row)
-						return (
-							<tr {...row.getRowProps()}>
-								{row.cells.map(cell => {
-									return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-								})}
-							</tr>
-						)
-					})}
-				</tbody>
-			</table>
-		)
-	} else {
-		return <div>loading</div>
-	}
-
-}
-
 
 const Manage = () => {
 	// State for track data thats being fetched from the api
@@ -85,15 +37,46 @@ const Manage = () => {
 		const form = new FormData()
 		const img = document.querySelector('input[name=img]').files[0]
 		const mp3 = document.querySelector('input[name=mp3]').files[0]
-		// input.setAttribute("name", uuidv5(input.files[0].name, uuidv5.DNS))
-		// input.setValue("name", "t")
-		// input.name = "aaa"
-		// console.log(input.name)
+
 		form.append("img", new Blob([img], { type: "image/png" }))
 		form.append("mp3", new Blob([mp3], { type: "audio/mp3" }))
 		form.append("title", valueTitle)
 		form.append("desc", valueDesc)
-		api.createTrack(form);
+
+		var trackReader = new FileReader();
+
+		trackReader.readAsArrayBuffer(mp3)
+
+		trackReader.onload = async (evt) => {
+			let audioCtx = new (AudioContext || webkitAudioContext)();
+
+			await audioCtx.decodeAudioData(evt.target.result)
+			.then(function (buffer) {
+				let song = audioCtx.createBufferSource();
+				song.buffer = buffer;
+
+				const a = buffer.getChannelData(song.buffer)
+
+				const samples = []
+
+				const incrementer = Math.floor(a.length / 100);
+				for (let i = 0; i < a.length;) {
+					// set the value for this sample
+					let val = a[i].toFixed(1) * 1;
+
+					// normalize the negative values
+					if (a[i] > 0) val = val * - 1;
+
+					samples.push(parseFloat(val))
+
+					i += incrementer;
+				}
+
+				form.append("spectrum", JSON.stringify(samples))
+				api.createTrack(form);
+			})
+		}
+
 		alert(`Submitting Name ${valueTitle}, ${valueDesc}`)
 		// resetTitle()
 		// resetDesc()
@@ -106,11 +89,9 @@ const Manage = () => {
 		const fetchData = async () => {
 			const result = await api.getTracks()
 			setTracks(result.data);
-			// console.log(tracks)
 		}
 		fetchData()
 	}, []);
-	console.log(tracks)
 
 	const columns = React.useMemo(
 		() => [
@@ -148,7 +129,7 @@ const Manage = () => {
 					</fieldset>
 
 					<fieldset>
-					<legend><h3>Submit track data:</h3></legend>
+						<legend><h3>Submit track data:</h3></legend>
 						<label>
 							PNG<br />
 							<input type="file" name="img" accept="image/*" {...bindImg} />

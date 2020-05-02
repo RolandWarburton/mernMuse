@@ -20,6 +20,11 @@ const Track = mongoose.Schema({
 	mp3: {
 		type: String,
 		require: true
+	},
+	spectrum: {
+		type: Array,
+		array: Number,
+		require: true
 	}
 
 }, { collection: 'testCollection' })

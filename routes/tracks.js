@@ -39,6 +39,9 @@ router.get('/track/sound/:id', TrackController.getTrackMp3ById)
 // return a track by its ID
 router.get('/track/image/:id', TrackController.getTrackImgById)
 
+// return a track spectrum by its ID
+router.get('/track/spectrum/:id', TrackController.getMp3SpectrumById)
+
 // post a track
 router.post('/track', TrackController.createTrack)
 

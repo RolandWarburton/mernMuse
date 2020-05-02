@@ -25,7 +25,11 @@ const blue = "#00FFFF"
 const white = "#FFF"
 
 const TrackCanvas = (match) => {
-	const sound = [0, 0.1, 0.5, 0.2, 0.7, 0.3, 0.4, 0.3, 0.5, 0.7, 0.6, 0.3, 0.4, 0.8, 0.9, 1, 0, 0.1, 0.5, 0.2, 0.2, 0.3, 0.4, 0.3, 0.5, 0.7, 0.6, 0.3, 0.7, 0.8, 0.9, 1, 0.5, 0.2, 0.7, 0.3, 0.4, 0, 0.1, 0.5, 0.8, 0.7, 0.3, 0.4, 0.3, 0.5, 0.7, 0.6, 0.3, 0.7, 0.8, 0.9, 1, 0, 0.1, 0.5, 0.2, 0.5, 0.2, 0.7, 0.3, 0.4, 0.9, 0.7, 0.3, 0.2, 0.3, 0.5, 0.7, 0.6, 0.3, 0.7, 0.8, 0.9, 1, 0.5, 0.1, 0.5, 0.2, 0.7, 0.3, 0.4, 0.3, 0.5, 0.7, 0.6, 0.3, 0.7, 0.8, 0.9, 1, 0, 0.1, 0.5, 0.2, 0.7, 0.3, 0.4, 0.3, 0.5, 0.7, 0.6, 0.3, 0.7, 0.8, 0.4, 1, 0, 0.1, 0.5, 0.2, 0.7, 0.3, 0.7, 0.3, 0.5, 0.7, 0.6, 0.3, 0.7, 0.8, 0.9, 1, 0, 0.1, 0.5]
+	// TODO clean up all the sound arrays. messy messy uwu
+	// const sound = [0, 0.2, 0.2, 0.1, 0.4, 0.3, 0.1, 0.5, 0.2, 0.2, 0.5, 0.3, 0.1, 0, 0.2, 0.1, 0.4, 0.1, 0.1, 0, 0.9, 0.1, 0.2, 0.5, 0, 0.3, 0.3, 0, 0.3, 0.2, 0.1, 0.2, 0.3, 0.5, 0.1, 0.1, 0.5, 0.2, 0.3, 0.9, 0.2, 0.4, 0.5, 0, 0, 0.2, 0.1, 0.5, 0.5, 0.2, 0.2, 0.3, 0.4, 0.3, 0.2, 0.1, 0, 0, 0.4, 0.3, 0.2, 0.3, 0.2, 0.2, 0, 0.3, 0.5, 0, 0.1, 0.2, 0.5, 0.3, 0.3, 0.3, 0.1, 0.3, 0.4, 0.1, 0.3, 0.7, 0.4, 0.2, 0.2, 0.2, 0.4, 0.4, 0.3, 0.3, 0.1, 0.2, 0.3, 0.1, 0.1, 0.3, 0.1, 0.5, 0.1, 0.3, 0.3, 0.1]
+	const sound = [-1, -0.1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+	const sound2 = [-0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5]
+	const sound3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 	const canvasRef = React.useRef(null);
 	const [barProgress, setBarProgress] = React.useState(1);
@@ -33,6 +37,7 @@ const TrackCanvas = (match) => {
 	const [playing, setPlaying] = React.useState(false);
 	const [trackProgress, setTrackProgress] = React.useState(1);
 	const [trackID, setTrackID] = React.useState("track");
+	const [spectrum, setSpectrum] = React.useState(sound3);
 
 	// set the canvas size ONCE on load (using ,[])
 	useEffect(() => {
@@ -45,12 +50,24 @@ const TrackCanvas = (match) => {
 
 		setTrackID(match.id)
 
-		// fetch("/api/track/info/track 1")
-		// 	.then((d) => {
-		// 		return d.text()
-		// 	})
-		// 	.then((d) => console.log(d))
-	}, [])
+		fetch(`/api/track/spectrum/${match.id}`)
+			.then((d) => {
+				return d.json()
+			})
+			.then((d) => {
+				// setSpectrum(d.spectrum)
+				setSpectrum(d.spectrum)
+				console.log("updated the spectrum")
+				drawBar(canvas, ctx)
+			})
+		}, [])
+		
+		useEffect(() => {
+			const canvas = canvasRef.current
+			const ctx = canvas.getContext('2d')
+			console.log(spectrum)
+		drawBar(canvas, ctx)
+	}, [spectrum])
 
 	// redraw the bar when it needs to be redrawn
 	useEffect(() => {
@@ -103,13 +120,14 @@ const TrackCanvas = (match) => {
 	// draw the bar
 	const drawBar = (canvas, ctx) => {
 		ctx.clearRect(0, 0, canvas.width, canvas.height)
+		// console.log(spectrum)
 
 		// set the gap between bars
-		const barGap = 1 + (canvas.width / sound.length) / 4
+		const barGap = 1 + (canvas.width / spectrum.length) / 4
 		// set the length of a bar
-		const barLength = canvas.width / sound.length - barGap
+		const barLength = canvas.width / spectrum.length - barGap
 		// get the aboslute space between each bar
-		const barSpace = canvas.width / sound.length
+		const barSpace = canvas.width / spectrum.length
 
 		ctx.clearRect(0, 0, canvas.width, canvas.height)
 
@@ -119,13 +137,13 @@ const TrackCanvas = (match) => {
 
 			const x = i * barSpace
 			const y = canvas.height
-			const height = - 1 + (sound[i] * canvas.height) * -1
+			const height = - 1 + (spectrum[i] * canvas.height)
 			// ctx.fillRect(x, y, barLength, height);
 			ctx.fillRect(x, y, barLength, height);
 		}
 
 		// draw bar that HAS NOT played
-		for (let i = barProgress; i < sound.length; i++) {
+		for (let i = barProgress; i < spectrum.length; i++) {
 			ctx.fillStyle = white
 
 			// if the mouse is past this bar then draw it orange
@@ -135,7 +153,7 @@ const TrackCanvas = (match) => {
 
 			const x = i * barSpace
 			const y = canvas.height
-			const height = - 1 + (sound[i] * canvas.height) * -1
+			const height = - 1 + (spectrum[i] * canvas.height)
 			ctx.fillRect(x, y, barLength, height);
 		}
 	}
@@ -145,7 +163,7 @@ const TrackCanvas = (match) => {
 	return (
 		<Fragment>
 			<a id="playTrack" onClick={() => { setPlaying(!playing) }}>{playing && "pause" || "play"} the choons</a>
-			<audio src="/api/track/sound/track 1"
+			<audio src={"/api/track/sound/" + trackID}
 				onTimeUpdate={(e) => {
 					handleTrackTimer(e)
 				}}
@@ -175,8 +193,8 @@ const TrackCanvas = (match) => {
 						track.currentTime = trackProgress;
 					}
 
-					setTrackProgress(trackProgress)
-					console.log("clicked")
+					setTrackProgress(track.duration)
+					console.log(`track progress ${trackProgress}`)
 
 					drawBar(canvas, ctx)
 				}}

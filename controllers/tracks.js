@@ -29,9 +29,17 @@ createTrack = (req, res) => {
 			res.end(`error:\n\n${util.inspect(err)}`);
 		})
 		.on('field', (fieldName, fieldValue) => {
-			fields = {
-				...fields,
-				[fieldName]: fieldValue
+			// if its the spectrum field it needs special streamment
+			if (fieldName == "spectrum") {
+				fields = {
+					...fields,
+					spectrum: JSON.parse(fieldValue)
+				}
+			} else {
+				fields = {
+					...fields,
+					[fieldName]: fieldValue
+				}
 			}
 		})
 		.on('fileBegin', function (name, file) {
@@ -51,7 +59,7 @@ createTrack = (req, res) => {
 
 			// return 200 and the fields we got
 			res.writeHead(200, { 'content-type': 'text/plain' });
-			res.end(`received fields:\n\n${util.inspect(fields)}`);
+			// res.end(`received fields:\n\n${util.inspect(fields)}`);
 		});
 
 	form.parse(req, () => {
@@ -130,21 +138,20 @@ getTrackImgById = async (req, res) => {
 		.on('end', () => { });
 }
 
-// getTrackWaveById = async (req, res) => {
-// 	res.setHeader('content-type', 'image/png');
-// 	res.setHeader('accept-ranges', 'bytes');
-// 	Track
-// 		.find({ title: req.params.id }, "mp3")
-// 		.cursor()
-// 		.on('error', (err) => {
-// 			console.log(err);
-// 			res.status(400).json({ success: false, err: err })
-// 		})
-// 		.on('data', (doc) => {
-// 			// res.status(200).send(new Buffer.from(doc.img.data, "binary"))
-// 		})
-// 		.on('end', () => { });
-// }
+getMp3SpectrumById = async (req, res) => {
+	res.setHeader('content-type', 'text/json');
+	Track
+		.find({ title: req.params.id }, "spectrum")
+		.cursor()
+		.on('error', (err) => {
+			console.log(err);
+			res.status(400).json({ success: false, err: err })
+		})
+		.on('data', (spectrum) => {
+			res.status(200).json(spectrum)
+		})
+		.on('end', () => { });
+}
 
 getTrackMp3ById = async (req, res) => {
 	res.setHeader('content-type', 'audio/mp3');
@@ -195,8 +202,10 @@ module.exports = {
 	getTracks,
 	getTrackImgById,
 	getTrackMp3ById,
-	getTrackById
+	getTrackById,
+	getMp3SpectrumById
 }
+// getMp3SpectrumById
 
 // Heres the other way of doing binary transfers
 // await Track

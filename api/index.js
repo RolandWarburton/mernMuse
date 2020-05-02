@@ -12,13 +12,16 @@ export const deleteTrack = id => api.delete(`/track/${id}`)
 export const getTrackById = id => api.get(`/track/info/${id}`)
 export const getTrackImgById = id => api.get(`/image/image/${id}`)
 export const getTrackMp3ById = id => api.get(`/sound/sound/${id}`)
+export const getMp3SpectrumById = id => api.get(`/sound/spectrum/${id}`)
+
 	
 
 const apis = {
 	createTrack,
 	getTracks,
 	deleteTrack,
-	getTrackImgById
+	getTrackImgById,
+	getMp3SpectrumById
 }
 
 export default apis
