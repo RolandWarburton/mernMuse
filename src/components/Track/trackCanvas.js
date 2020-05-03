@@ -1,5 +1,4 @@
-import React, { Fragment, useState, useEffect } from "react"
-import Meta from "../Meta"
+import React, { Fragment, useState, useEffect, useRef } from "react"
 
 const drawButton = function (ctx) {
 	// circle
@@ -19,108 +18,140 @@ const drawButton = function (ctx) {
 	ctx.fill()
 }
 
-
 const orange = "#FFA500"
 const blue = "#00FFFF"
 const white = "#FFF"
 
 const TrackCanvas = (match) => {
-	// TODO clean up all the sound arrays. messy messy uwu
-	// const sound = [0, 0.2, 0.2, 0.1, 0.4, 0.3, 0.1, 0.5, 0.2, 0.2, 0.5, 0.3, 0.1, 0, 0.2, 0.1, 0.4, 0.1, 0.1, 0, 0.9, 0.1, 0.2, 0.5, 0, 0.3, 0.3, 0, 0.3, 0.2, 0.1, 0.2, 0.3, 0.5, 0.1, 0.1, 0.5, 0.2, 0.3, 0.9, 0.2, 0.4, 0.5, 0, 0, 0.2, 0.1, 0.5, 0.5, 0.2, 0.2, 0.3, 0.4, 0.3, 0.2, 0.1, 0, 0, 0.4, 0.3, 0.2, 0.3, 0.2, 0.2, 0, 0.3, 0.5, 0, 0.1, 0.2, 0.5, 0.3, 0.3, 0.3, 0.1, 0.3, 0.4, 0.1, 0.3, 0.7, 0.4, 0.2, 0.2, 0.2, 0.4, 0.4, 0.3, 0.3, 0.1, 0.2, 0.3, 0.1, 0.1, 0.3, 0.1, 0.5, 0.1, 0.3, 0.3, 0.1]
-	const sound = [-1, -0.1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
-	const sound2 = [-0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5, -0.5]
-	const sound3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	// an audio spectrum thats silent
+	// used as a placeholder until the actual spectrum data is loaded
+	const noSound = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-	const canvasRef = React.useRef(null);
-	const [barProgress, setBarProgress] = React.useState(1);
-	const [mouseX, setMouseX] = React.useState(0);
-	const [playing, setPlaying] = React.useState(false);
-	const [trackProgress, setTrackProgress] = React.useState(1);
-	const [trackID, setTrackID] = React.useState("track");
-	const [spectrum, setSpectrum] = React.useState(sound3);
+	// make react references for the track and canvas
+	// the references are set in the html: <canvas ref={canvasRef} />
+	// now you can magically conjure the reference to the object with canvasRef.current
+	const canvasRef = useRef(null);
+	const trackRef = useRef(null);
+
+	// set all the hooks...
+
+	// how far the song has progressed (in bars)
+	const [barProgress, setBarProgress] = useState(0);
+	// how far the song has progressed (in seconds)
+	const [trackProgress, setTrackProgress] = useState(1);
+	const [mouseX, setMouseX] = useState(0);
+	const [playing, setPlaying] = useState(false);
+	// the array of values for the spectrum bar. initially all 0s
+	const [spectrum, setSpectrum] = useState(noSound);
 
 	// set the canvas size ONCE on load (using ,[])
 	useEffect(() => {
+		// get the reference to the canvas
 		const canvas = canvasRef.current
-		const ctx = canvas.getContext('2d')
+
+		// set the canvas size
 		canvas.width = 600;
 		canvas.height = 50;
 
-		drawBar(canvas, ctx)
-
-		setTrackID(match.id)
-
+		// go and fetch the spectrum data for the track
 		fetch(`/api/track/spectrum/${match.id}`)
 			.then((d) => {
+				// data is fetched and then json is returned
 				return d.json()
 			})
 			.then((d) => {
-				// setSpectrum(d.spectrum)
+				// once the json data has been parsed set the spectrum data
 				setSpectrum(d.spectrum)
-				console.log("updated the spectrum")
-				drawBar(canvas, ctx)
-			})
-		}, [])
-		
-		useEffect(() => {
-			const canvas = canvasRef.current
-			const ctx = canvas.getContext('2d')
-			console.log(spectrum)
-		drawBar(canvas, ctx)
-	}, [spectrum])
+			});
+	}, [])
+
+	// triggered by the <canvas> onDown
+	// updates the tracks progress (the time of the track)
+	const handleTrackOnProgress = () => {
+		const track = trackRef.current
+		const canvas = canvasRef.current
+
+		const mouseProgress = mouseX / canvas.width;
+		const trackProgress = Math.floor(mouseProgress * track.duration)
+
+		if (trackProgress > 0 && trackProgress < track.duration) {
+			track.currentTime = trackProgress;
+		}
+
+		// keep track of the progress in the component state
+		// currently not actually used for anything (but good to have)
+		// ? planning to use it for a track progress in seconds display
+		setTrackProgress(trackProgress)
+	};
 
 	// redraw the bar when it needs to be redrawn
+	// triggers on mouse change or track time changes
 	useEffect(() => {
-		const canvas = canvasRef.current
-		const ctx = canvas.getContext('2d')
+		drawBar()
+	}, [mouseX, barProgress, spectrum])
 
-		drawBar(canvas, ctx)
-	}, [mouseX, barProgress])
-
+	// keep track of if the song is playing or paused
+	// the setPlaying(!playing) hook will toggle between play/pause
+	// and automatically play or pause the track based on its state
 	useEffect(() => {
-		const track = document.getElementById(trackID)
+		// get the track
+		// console.log(trackRef.current)
+		// console.log(document.getElementById(match.id))
+		const track = trackRef.current
+		// const track = track
+
+		// if supposed to be playing then play it
 		if (playing) track.play()
 		else track.pause()
 	}, [playing])
 
-	useEffect((e) => {
-		const track = document.getElementById(trackID)
-		// console.log("setting track progress")
+	// on the canvas mouse down the track progress is updated
+	// this triggers trackProgress to handle the tracks new time
+	useEffect(() => {
+		const track = trackRef.current
 
 		const canvas = canvasRef.current
 		const ctx = canvas.getContext('2d')
 
 		// set the time to between 0 and the length of the track based on the mouse X
 		const mouseProgress = mouseX / canvas.width;
+		// get the tracks new progress in seconds based on where the mouse is 
 		const trackProgress = Math.floor(mouseProgress * track.duration)
 
 		if (trackProgress > 0 && trackProgress < track.duration) {
 			track.currentTime = trackProgress;
 		} else {
+			// this usually triggers on the songs load because its not ready yet
 			// console.log("something went wrong. the song is out of range")
 		}
 
-		drawBar(canvas, ctx)
 	}, [trackProgress])
 
 	// update the bars progress as the track progresses
-	const handleTrackTimer = (e) => {
+	// this is called by the <audio /> tag and is called every song tick
+	const handleTrackTimer = () => {
 		const canvas = canvasRef.current
 		const ctx = canvas.getContext('2d')
 
-		const track = e.target;
+		const track = trackRef.current;
 		const soundProgress = (track.currentTime != 0) ? track.currentTime / track.duration : 0
-		const barProgress = Math.floor(sound.length * soundProgress)
+		const barProgress = Math.floor(spectrum.length * soundProgress)
 
 		setBarProgress(barProgress)
 
-		drawBar(canvas, ctx)
+		drawBar()
 	}
 
-	// draw the bar
-	const drawBar = (canvas, ctx) => {
+	// draw the bars
+	const drawBar = () => {
+
+		// get the canvas reference (reacts useRef reference to the <canvas> element)
+		const canvas = canvasRef.current;
+
+		// get the context for drawing on the canvas
+		const ctx = canvas.getContext('2d');
+
 		ctx.clearRect(0, 0, canvas.width, canvas.height)
-		// console.log(spectrum)
 
 		// set the gap between bars
 		const barGap = 1 + (canvas.width / spectrum.length) / 4
@@ -158,45 +189,42 @@ const TrackCanvas = (match) => {
 		}
 	}
 
-
-
 	return (
 		<Fragment>
-			<a id="playTrack" onClick={() => { setPlaying(!playing) }}>{playing && "pause" || "play"} the choons</a>
-			<audio src={"/api/track/sound/" + trackID}
-				onTimeUpdate={(e) => {
-					handleTrackTimer(e)
+			<a
+				id="playTrack"
+				onClick={() => {
+					setPlaying(!playing)
+				}}>
+				{playing && "pause" || "play"} the choons
+			</a>
+			<audio
+				ref={trackRef}
+				src={"/api/track/sound/" + match.id}
+				onTimeUpdate={(event) => {
+					handleTrackTimer();
 				}}
-				id={trackID}
-
+				id={match.id}
 			/>
 			<canvas
 				ref={canvasRef}
 				onMouseMove={(e) => {
+					// when the mouse moves...
+
+					// get the 'x' of the element from the left of the window
 					const x = e.currentTarget.offsetLeft;
+					// normalize x from the left of window to get dx relitive to the canvas
 					const dx = e.clientX - x;
 
 					setMouseX(dx);
 				}}
 				onMouseLeave={(e) => {
+					// set mouseX back to 0 to remove the orange shaded bar
 					setMouseX(0);
 				}}
 				onMouseDown={(e) => {
-					const track = document.getElementById(trackID)
-					const canvas = canvasRef.current
-					const ctx = canvas.getContext('2d')
-
-					const mouseProgress = mouseX / canvas.width;
-					const trackProgress = Math.floor(mouseProgress * track.duration)
-
-					if (trackProgress > 0 && trackProgress < track.duration) {
-						track.currentTime = trackProgress;
-					}
-
-					setTrackProgress(track.duration)
-					console.log(`track progress ${trackProgress}`)
-
-					drawBar(canvas, ctx)
+					// update the tracks progress
+					handleTrackOnProgress();
 				}}
 			></canvas>
 		</Fragment >
