@@ -95,10 +95,7 @@ const TrackCanvas = (match) => {
 	// and automatically play or pause the track based on its state
 	useEffect(() => {
 		// get the track
-		// console.log(trackRef.current)
-		// console.log(document.getElementById(match.id))
 		const track = trackRef.current
-		// const track = track
 
 		// if supposed to be playing then play it
 		if (playing) track.play()
@@ -109,9 +106,7 @@ const TrackCanvas = (match) => {
 	// this triggers trackProgress to handle the tracks new time
 	useEffect(() => {
 		const track = trackRef.current
-
 		const canvas = canvasRef.current
-		const ctx = canvas.getContext('2d')
 
 		// set the time to between 0 and the length of the track based on the mouse X
 		const mouseProgress = mouseX / canvas.width;
@@ -130,9 +125,6 @@ const TrackCanvas = (match) => {
 	// update the bars progress as the track progresses
 	// this is called by the <audio /> tag and is called every song tick
 	const handleTrackTimer = () => {
-		const canvas = canvasRef.current
-		const ctx = canvas.getContext('2d')
-
 		const track = trackRef.current;
 		const soundProgress = (track.currentTime != 0) ? track.currentTime / track.duration : 0
 		const barProgress = Math.floor(spectrum.length * soundProgress)
@@ -162,18 +154,17 @@ const TrackCanvas = (match) => {
 
 		ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-		// draw bar that HAS played already
+		// draw bars that HAS played already
 		for (let i = 0; i < barProgress; i++) {
 			ctx.fillStyle = blue
 
 			const x = i * barSpace
 			const y = canvas.height
 			const height = - 1 + (spectrum[i] * canvas.height)
-			// ctx.fillRect(x, y, barLength, height);
 			ctx.fillRect(x, y, barLength, height);
 		}
 
-		// draw bar that HAS NOT played
+		// draw bars that HAS NOT played
 		for (let i = barProgress; i < spectrum.length; i++) {
 			ctx.fillStyle = white
 
@@ -210,7 +201,6 @@ const TrackCanvas = (match) => {
 				ref={canvasRef}
 				onMouseMove={(e) => {
 					// when the mouse moves...
-
 					// get the 'x' of the element from the left of the window
 					const x = e.currentTarget.offsetLeft;
 					// normalize x from the left of window to get dx relitive to the canvas
@@ -226,7 +216,7 @@ const TrackCanvas = (match) => {
 					// update the tracks progress
 					handleTrackOnProgress();
 				}}
-			></canvas>
+			/>
 		</Fragment >
 	);
 }
