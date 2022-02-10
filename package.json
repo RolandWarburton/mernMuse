@@ -27,7 +27,7 @@
     "install": "^0.13.0",
     "jest": "^25.2.7",
     "mime-types": "^2.1.26",
-    "node-sass": "^4.13.1",
+    "node-sass": "^7.0.0",
     "nodemon": "^2.0.3",
     "npm": "^6.14.4",
     "react-helmet": "^5.2.1",
